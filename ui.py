@@ -1,7 +1,9 @@
 # displaying the game board, capturing user input, updating the game state based on user actions
 # from PIL import Image, ImageTk  # pip install pillow
+from const import *
 from tkinter import *
 from database import register_user, login_user
+from game import Cell, start_game
 from random import randint  # TEMP
 
 
@@ -36,8 +38,6 @@ def register_button_clicked(entry_username, entry_password, player, window):
 #
 # MAIN UI DRAW
 def draw_interface():
-    widgets_bg = '#2b323a'  # light
-    # widgets_bg = '#262c34'  # dark
 
     root = Tk()
     root.title('Tic-tac-toe')
@@ -51,7 +51,7 @@ def draw_interface():
 
     #
     # Player 1, Player 2 BUTTONS frame
-    top_menu_frame = Frame(root, bg=widgets_bg)
+    top_menu_frame = Frame(root, bg=WIDGETS_BG)
     top_menu_frame.pack(pady=10, padx=20, fill='x')
 
     # TODO remove buttons, make usernames buttons, FLAT, hand2
@@ -68,44 +68,69 @@ def draw_interface():
 
     #
     # players INFO frame
-    players_info_frame = Frame(root, bg=widgets_bg)
+    players_info_frame = Frame(root, bg=WIDGETS_BG)
     players_info_frame.pack(pady=5, padx=10, fill='x')
     #
     # NAME 1 UPDATE
     x_icon = PhotoImage(file='images/x_icon.png')
-    x_icon_label = Label(players_info_frame, image=x_icon, bd=0, bg=widgets_bg)
+    x_icon_label = Label(players_info_frame, image=x_icon, bd=0, bg=WIDGETS_BG)
     x_icon_label.grid(row=0, column=0, padx=20, sticky='w')
 
     name1 = StringVar()  # StringVar - tkinter class to update text dynamically
     name1.set('Bobka')
-    player1_name_label = Label(players_info_frame, textvariable=name1, font=('Helvetica', 15, 'bold'), fg='white', bg=widgets_bg)
+    player1_name_label = Label(players_info_frame, textvariable=name1, font=('Helvetica', 15, 'bold'), fg='white', bg=WIDGETS_BG)
     player1_name_label.grid(row=0, column=1, sticky='w')
 
-    spacer_label = Label(players_info_frame, width=10, bg=widgets_bg)
+    spacer_label = Label(players_info_frame, width=10, bg=WIDGETS_BG)
     spacer_label.grid(row=0, column=2)
 
     # WINS
-    wins_label = Label(players_info_frame, text='0 | 0', fg='white', bg=widgets_bg)
+    wins_label = Label(players_info_frame, text='0 | 0', fg='white', bg=WIDGETS_BG)
     wins_label.grid(row=0, column=3)
 
-    spacer_label = Label(players_info_frame, width=10, bg=widgets_bg)
+    spacer_label = Label(players_info_frame, width=10, bg=WIDGETS_BG)
     spacer_label.grid(row=0, column=4)
 
     #
     # NAME 2 UPDATE
     name2 = StringVar()
     name2.set('Gopka')
-    player2_name_label = Label(players_info_frame, textvariable=name2, font=('Helvetica', 15, 'bold'), fg='white', bg=widgets_bg)
+    player2_name_label = Label(players_info_frame, textvariable=name2, font=('Helvetica', 15, 'bold'), fg='white', bg=WIDGETS_BG)
     player2_name_label.grid(row=0, column=5, sticky='e')
 
     o_icon = PhotoImage(file='images/o_icon.png')
-    o_icon_label = Label(players_info_frame, image=o_icon, bd=0, bg=widgets_bg)
+    o_icon_label = Label(players_info_frame, image=o_icon, bd=0, bg=WIDGETS_BG)
     o_icon_label.grid(row=0, column=6, padx=20, sticky='e')
 
     players_info_frame.grid_columnconfigure((0, 1, 2, 3, 4, 5, 6), weight=1)  # evenly distribute columns
 
     #
+    # mark with LINE whose turn is now
+    # active_player = start_game()
+    # LINE frame
+    # active_players_frame = Frame(root, bg=WIDGETS_BG)
+    # active_players_frame.pack(pady=0, padx=10, fill='x')
+    # if active_player == 1:
+    #     line_image = PhotoImage(file='images/line_01.png')
+    # elif active_player == 2:
+    #     line_image = PhotoImage(file='images/line_02.png')
+    # line1_label = Label(active_players_frame, image=line_image, bd=0, bg=WIDGETS_BG)
+    # line1_label.pack()
+
+
+    #
     # tic-tac-toe FIELD
+    # fill Field with Cells (clear at beginning)
+    cells = []  # empty list to store Cell instances
+    for row in range(ROWS):
+        for col in range(COLS):
+            cell_instance = Cell(root, FIELD_X_0 + 140 * col, FIELD_Y_0 + 140 * row)
+            cell_instance.spawn()
+            cells.append(cell_instance)  # to reference a specific Cell
+    # selected_cell = cells[i]  # to reference a specific Cell
+    # selected_cell.image_label.configure(image=x_image)
+
+
     def cell_click(e, cell):
         first_move = randint(1, 2)
         print(f'click + {first_move}')
@@ -118,40 +143,37 @@ def draw_interface():
         else:
             cell.configure(image=o_image)
 
-    o_image = PhotoImage(file='images/o.png')
-    x_image = PhotoImage(file='images/x.png')
-    c_image = PhotoImage(file='images/clear_cell.png')
 
-    c_image_label1 = Label(root, image=c_image, bd=0, bg=widgets_bg)  # bd=0 - border to 0
-    c_image_label1.place(x=50, y=122)
-    c_image_label1.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label1))
-
-    c_image_label2 = Label(root, image=c_image, bd=0, bg=widgets_bg)
-    c_image_label2.place(x=190, y=122)
-    c_image_label2.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label2))
-    c_image_label3 = Label(root, image=c_image, bd=0, bg=widgets_bg)
-    c_image_label3.place(x=330, y=122)
-    c_image_label3.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label3))
-
-    c_image_label4 = Label(root, image=c_image, bd=0, bg=widgets_bg)
-    c_image_label4.place(x=50, y=262)
-    c_image_label4.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label4))
-    c_image_label5 = Label(root, image=c_image, bd=0, bg=widgets_bg)
-    c_image_label5.place(x=190, y=262)
-    c_image_label5.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label5))
-    c_image_label6 = Label(root, image=c_image, bd=0, bg=widgets_bg)
-    c_image_label6.place(x=330, y=262)
-    c_image_label6.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label6))
-
-    c_image_label7 = Label(root, image=c_image, bd=0, bg=widgets_bg)
-    c_image_label7.place(x=50, y=402)
-    c_image_label7.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label7))
-    c_image_label8 = Label(root, image=c_image, bd=0, bg=widgets_bg)
-    c_image_label8.place(x=190, y=402)
-    c_image_label8.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label8))
-    c_image_label9 = Label(root, image=c_image, bd=0, bg=widgets_bg)
-    c_image_label9.place(x=330, y=402)
-    c_image_label9.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label9))
+    # c_image_label1 = Label(root, image=c_image, bd=0, bg=WIDGETS_BG)  # bd=0 - border to 0
+    # c_image_label1.place(x=50, y=122)
+    # c_image_label1.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label1))
+    #
+    # c_image_label2 = Label(root, image=c_image, bd=0, bg=WIDGETS_BG)
+    # c_image_label2.place(x=190, y=122)
+    # c_image_label2.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label2))
+    # c_image_label3 = Label(root, image=c_image, bd=0, bg=WIDGETS_BG)
+    # c_image_label3.place(x=330, y=122)
+    # c_image_label3.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label3))
+    #
+    # c_image_label4 = Label(root, image=c_image, bd=0, bg=WIDGETS_BG)
+    # c_image_label4.place(x=50, y=262)
+    # c_image_label4.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label4))
+    # c_image_label5 = Label(root, image=c_image, bd=0, bg=WIDGETS_BG)
+    # c_image_label5.place(x=190, y=262)
+    # c_image_label5.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label5))
+    # c_image_label6 = Label(root, image=c_image, bd=0, bg=WIDGETS_BG)
+    # c_image_label6.place(x=330, y=262)
+    # c_image_label6.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label6))
+    #
+    # c_image_label7 = Label(root, image=c_image, bd=0, bg=WIDGETS_BG)
+    # c_image_label7.place(x=50, y=402)
+    # c_image_label7.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label7))
+    # c_image_label8 = Label(root, image=c_image, bd=0, bg=WIDGETS_BG)
+    # c_image_label8.place(x=190, y=402)
+    # c_image_label8.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label8))
+    # c_image_label9 = Label(root, image=c_image, bd=0, bg=WIDGETS_BG)
+    # c_image_label9.place(x=330, y=402)
+    # c_image_label9.bind('<ButtonRelease-1>', lambda e: cell_click(e, c_image_label9))
 
     # TODO maybe classes for placement of X and O
 
@@ -161,6 +183,8 @@ def draw_interface():
     root.mainloop()
 
 
+#
+# LOGIN window
 def draw_login_window(root, player):  # draw login/register
     # TODO change background color to main window and text color to white
     # login_window = Tk() - instead passed root to set position of login window
