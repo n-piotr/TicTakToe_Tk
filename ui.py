@@ -121,27 +121,32 @@ def draw_interface():
     #
     # tic-tac-toe FIELD
     # fill Field with Cells (clear at beginning)
-    cells = []  # empty list to store Cell instances
-    for row in range(ROWS):
-        for col in range(COLS):
-            cell_instance = Cell(root, FIELD_X_0 + 140 * col, FIELD_Y_0 + 140 * row)
-            cell_instance.spawn()
-            cells.append(cell_instance)  # to reference a specific Cell
+    def fill_field():
+        cells = []  # empty list to store Cell instances
+
+        # TODO clear previous instances (destroy() method for Cell)
+
+        for row in range(ROWS):
+            for col in range(COLS):
+                cell_instance = Cell(root, FIELD_X_0 + 140 * col, FIELD_Y_0 + 140 * row)
+                cell_instance.spawn()
+                # while spawn can be created new local attr with row, col for this instance
+                cells.append(cell_instance)  # to reference a specific Cell, if needed later(?)
     # selected_cell = cells[i]  # to reference a specific Cell
     # selected_cell.image_label.configure(image=x_image)
 
 
-    def cell_click(e, cell):
-        first_move = randint(1, 2)
-        print(f'click + {first_move}')
-        # change this cell to X or O
-        # c_image_label.place_forget()
-        # TODO check if old image (clear_cell) gone
-        # TODO ^ https://stackoverflow.com/questions/41657449/tkinter-not-changing-image-on-button-press
-        if first_move == 1:
-            cell.configure(image=x_image)
-        else:
-            cell.configure(image=o_image)
+    # def cell_click(e, cell):
+    #     first_move = randint(1, 2)
+    #     print(f'click + {first_move}')
+    #     # change this cell to X or O
+    #     # c_image_label.place_forget()
+    #     # TODO check if old image (clear_cell) gone
+    #     # TODO ^ https://stackoverflow.com/questions/41657449/tkinter-not-changing-image-on-button-press
+    #     if first_move == 1:
+    #         cell.configure(image=x_image)
+    #     else:
+    #         cell.configure(image=o_image)
 
 
     # c_image_label1 = Label(root, image=c_image, bd=0, bg=WIDGETS_BG)  # bd=0 - border to 0
@@ -179,6 +184,14 @@ def draw_interface():
 
     # bottom menu frame
     # TODO Exit Button(..., command=root.quit)
+
+    def restart(event):
+        print('restart')
+        # clear field
+        # draw field
+        fill_field()
+
+    root.bind('<KeyPress-r>', restart)  # refill field with clear cells
 
     root.mainloop()
 
